@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Booking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        .auth-container {
+            max-width: 420px;
+            margin: 50px auto;
+            padding: 35px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1, h2, h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #22543d;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2f855a;
+            box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.12);
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(47, 133, 90, 0.28);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #9ae6b4 0%, #48bb78 100%);
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.25);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.34);
+        }
+        
+        .error {
+            color: #f56565;
+            background: #fff5f5;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .success {
+            color: #48bb78;
+            background: #f0fff4;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .bus-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            animation: slideUp 0.5s ease;
+        }
+        
+        .bus-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .bus-card h4 {
+            color: #2f855a;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .bus-card p {
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .bus-card p strong {
+            color: #2d3748;
+        }
+        
+        .bus-image-container {
+            width: 100%;
+            max-width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f7fafc;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .bus-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            display: block;
+        }
+        
+        /* Bus Seat Layout - 2x2 with aisle */
+        .bus-layout {
+            background: #f7fafc;
+            padding: 30px 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .bus-front {
+            background: #2f855a;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 15px;
+        }
+        
+        .seat-pair {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .aisle {
+            width: 40px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 12px;
+        }
+        
+        .seat {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 10px 10px 5px 5px;
+            cursor: pointer;
+            border: 2px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .seat::before {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: currentColor;
+            opacity: 0.3;
+            border-radius: 2px;
+        }
+        
+        .seat:hover:not(.booked) {
+            transform: scale(1.05);
+        }
+        
+        .seat.available {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border-color: #38a169;
+        }
+        
+        .seat.booked {
+            background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+            color: white;
+            border-color: #f56565;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .seat.selected {
+            background: linear-gradient(135deg, #2f855a 0%, #22543d 100%);
+            color: white;
+            border-color: #22543d;
+            transform: scale(1.08);
+            box-shadow: 0 4px 15px rgba(34, 84, 61, 0.36);
+        }
+        
+        .seat-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .seat-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        
+        .seat-legend-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .nav h2 {
+            margin: 0;
+            color: #2f855a;
+            font-size: 20px;
+        }
+        
+        .nav button {
+            width: auto;
+            padding: 10px 20px;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+        
+        .back-btn {
+            margin-bottom: 15px;
+            width: auto;
+            padding: 10px 20px;
+            background: #4a5568;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #2d3748;
+            box-shadow: 0 4px 15px rgba(45, 55, 72, 0.18);
+        }
+        
+        .payment-qr {
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .cancelled {
+            color: #f56565;
+            font-weight: bold;
+        }
+        
+        .confirmed {
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        /* Ticket Display Styles */
+        .ticket-container {
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .ticket-header {
+            background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .ticket-content {
+            padding: 25px;
+        }
+
+        .ticket-image-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .ticket-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 25px 0;
+        }
+
+        .ticket-info-column {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .ticket-info-column h4 {
+            color: #2f855a;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #2f855a;
+            padding-bottom: 8px;
+        }
+
+        .ticket-info-row {
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-info-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .ticket-info-value {
+            color: #2d3748;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .ticket-payment-box {
+            background: white;
+            border: 3px solid #2f855a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            width: fit-content;
+        }
+
+        .ticket-payment-box h4 {
+            color: #2f855a;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .ticket-instructions {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .ticket-instructions h4 {
+            color: #c53030;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .ticket-instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .ticket-instructions li {
+            margin: 8px 0;
+            color: #4a5568;
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive Design for Tickets */
+        @media (max-width: 768px) {
+            .ticket-info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .ticket-payment-box {
+                width: 100%;
+            }
+            
+            .ticket-actions {
+                flex-direction: column;
+            }
+            
+            .ticket-actions button {
+                width: 100%;
+            }
+        }
+        
+        
+        a {
+            color: #2f855a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Autocomplete styles */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 5px;
+        }
+
+        .autocomplete-suggestion {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .autocomplete-suggestion:hover {
+            background: #f7fafc;
+        }
+
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-suggestion strong {
+            color: #2f855a;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- Navigation will be dynamically shown -->
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let currentUser = null;
+        let selectedSeats = [];
+        let currentBus = null;
+        let selectedJourneyDate = null;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                currentUser = JSON.parse(localStorage.getItem('user'));
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        }
+
+        // Show login page
+        function showLogin() {
+            document.getElementById('app').innerHTML = `
+                <div class="auth-container">
+                    <h2>Login</h2>
+                    <div id="loginError" class="error"></div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password">
+                    </div>
+                    <button onclick="login()">Login</button>
+                    <p style="margin-top: 15px; text-align: center;">
+                        Don't have an account? <a href="#" onclick="showRegister()">Register here</a>
+                    </p>
+                </div>
+            `;
+        }
+
+        // Show registration page
+        function showRegister() {
+            document.getElementById('app').innerHTML = `
+                <div class="auth-container">
+                    <h2>Register</h2>
+                    <div id="registerError" class="error"></div>
+                    <div class="form-group">
+                        <label>Name:</label>
+                        <input type="text" id="regName" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="regEmail" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile:</label>
+                        <input type="tel" id="regMobile" placeholder="Enter 10-digit mobile number" maxlength="10" pattern="[6-9][0-9]{9}">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">10 digits starting with 6-9</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="regPassword" placeholder="Enter your password">
+                    </div>
+                    <button onclick="register()">Register</button>
+                    <p style="margin-top: 15px; text-align: center;">
+                        Already have an account? <a href="#" onclick="showLogin()">Login here</a>
+                    </p>
+                </div>
+            `;
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('app').innerHTML = `
+                <div class="nav">
+                    <h2>Welcome, ${currentUser.name}!</h2>
+                    <div>
+                        <button onclick="showSearch()" class="btn-secondary">Book Bus</button>
+                        <button onclick="showMyBookings()" class="btn-secondary">My Bookings</button>
+                        <button onclick="logout()">Logout</button>
+                    </div>
+                </div>
+                <div id="content">
+                    <!-- Content will be loaded here -->
+                </div>
+            `;
+            showSearch();
+        }
+
+        // Validation functions
+        function validateMobile(mobile) {
+            // Indian mobile number: 10 digits starting with 6-9
+            const mobileRegex = /^[6-9]\d{9}$/;
+            return mobileRegex.test(mobile.replace(/\s+/g, ''));
+        }
+
+        function validateEmail(email) {
+            // Email validation: must contain @ and valid domain
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+        function validateAge(age) {
+            const ageNum = parseInt(age);
+            return !isNaN(ageNum) && ageNum >= 1 && ageNum <= 120;
+        }
+
+        function validateUPI(upiId) {
+            // UPI ID format: name@provider (e.g., name@paytm, name@phonepe, name@ybl, name@okaxis)
+            const upiRegex = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+            return upiRegex.test(upiId);
+        }
+
+        // Show bus search
+        function showSearch() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const maxDate = new Date(today);
+            maxDate.setDate(maxDate.getDate() + 90);
+            
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const maxDateStr = maxDate.toISOString().split('T')[0];
+            
+            document.getElementById('content').innerHTML = `
+                <h3>Search Buses</h3>
+                <div class="bus-card">
+                    <div class="form-group">
+                        <label>From:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="searchFrom" placeholder="Starting point" autocomplete="off" oninput="showSuggestions('searchFrom', 'fromSuggestions')" onfocus="showSuggestions('searchFrom', 'fromSuggestions')" onblur="hideSuggestions('fromSuggestions', 200)">
+                            <div id="fromSuggestions" class="autocomplete-suggestions" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>To:</label>
+                        <div class="autocomplete-container">
+                            <input type="text" id="searchTo" placeholder="Destination" autocomplete="off" oninput="showSuggestions('searchTo', 'toSuggestions')" onfocus="showSuggestions('searchTo', 'toSuggestions')" onblur="hideSuggestions('toSuggestions', 200)">
+                            <div id="toSuggestions" class="autocomplete-suggestions" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="date" id="searchDate" min="${tomorrowStr}" max="${maxDateStr}">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Select a date between tomorrow and 90 days from today</small>
+                    </div>
+                    <button onclick="searchBuses()">Search Buses</button>
+                </div>
+                <div id="busResults"></div>
+            `;
+            
+            // Load available routes for autocomplete
+            loadAvailableRoutes();
+        }
+
+        // Available routes cache
+        let availableRoutes = {
+            from: [],
+            to: []
+        };
+
+        // Load available routes from API
+        async function loadAvailableRoutes() {
+            try {
+                const response = await fetch(`${API_BASE}/available-routes`);
+                const data = await response.json();
+                if (data && !data.error) {
+                    availableRoutes = data;
+                }
+            } catch (error) {
+                console.error('Error loading routes:', error);
+            }
+        }
+
+        // Show autocomplete suggestions
+        function showSuggestions(inputId, suggestionsId) {
+            const input = document.getElementById(inputId);
+            const suggestionsDiv = document.getElementById(suggestionsId);
+            const value = input.value.trim().toLowerCase();
+            
+            if (!value) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            const field = inputId === 'searchFrom' ? 'from' : 'to';
+            const routes = availableRoutes[field] || [];
+            
+            // Filter routes that match the input
+            const matches = routes.filter(route => 
+                route.toLowerCase().includes(value)
+            ).slice(0, 10); // Limit to 10 suggestions
+
+            if (matches.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            // Highlight matching text
+            let html = '';
+            matches.forEach(match => {
+                const index = match.toLowerCase().indexOf(value);
+                // Escape HTML and quotes for onclick
+                const escapedMatch = match.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const displayMatch = match.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                if (index !== -1) {
+                    const before = displayMatch.substring(0, index);
+                    const matched = displayMatch.substring(index, index + value.length);
+                    const after = displayMatch.substring(index + value.length);
+                    html += `<div class="autocomplete-suggestion" onclick="selectSuggestion('${inputId}', '${escapedMatch}')">${before}<strong>${matched}</strong>${after}</div>`;
+                } else {
+                    html += `<div class="autocomplete-suggestion" onclick="selectSuggestion('${inputId}', '${escapedMatch}')">${displayMatch}</div>`;
+                }
+            });
+
+            suggestionsDiv.innerHTML = html;
+            suggestionsDiv.style.display = 'block';
+        }
+
+        // Hide suggestions with delay (to allow click events)
+        function hideSuggestions(suggestionsId, delay) {
+            setTimeout(() => {
+                const suggestionsDiv = document.getElementById(suggestionsId);
+                if (suggestionsDiv) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            }, delay);
+        }
+
+        // Select a suggestion
+        function selectSuggestion(inputId, value) {
+            document.getElementById(inputId).value = value;
+            document.getElementById(inputId === 'searchFrom' ? 'fromSuggestions' : 'toSuggestions').style.display = 'none';
+        }
+
+        // Search buses
+        async function searchBuses() {
+            const from = document.getElementById('searchFrom').value;
+            const to = document.getElementById('searchTo').value;
+            const date = document.getElementById('searchDate').value;
+            // store selected journey date (YYYY-MM-DD)
+            selectedJourneyDate = date;
+
+            if (!from || !to || !date) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/search-buses?from=${from}&to=${to}&date=${date}`);
+                const buses = await response.json();
+                
+                if (buses.error) {
+                    document.getElementById('busResults').innerHTML = `<p class="error">${buses.error}</p>`;
+                    return;
+                }
+
+                let html = '<h3>Available Buses</h3>';
+                buses.forEach(bus => {
+                    // prefer server-provided ISO, then the user-selected date, then bus.departureDate
+                    const dateIso = bus.departureDateISO || selectedJourneyDate || (bus.departureDate ? new Date(bus.departureDate).toISOString().split('T')[0] : null);
+                    const displayDate = dateIso ? new Date(dateIso).toLocaleDateString() : '';
+                    html += `
+                        <div class="bus-card">
+                            <div class="bus-image-container">
+                                <img src="${bus.image}" alt="${bus.busName}" class="bus-image">
+                            </div>
+                            <h4>${bus.busName} (${bus.busNumber})</h4>
+                            <p><strong>Route:</strong> ${bus.from} to ${bus.to}</p>
+                            <p><strong>Departure:</strong> ${bus.departureTime}${displayDate ? ' on ' + displayDate : ''}</p>
+                            <p><strong>Arrival:</strong> ${bus.arrivalTime}</p>
+                            <p><strong>Price:</strong> ₹${bus.price}</p>
+                            <p><strong>Available Seats:</strong> ${bus.availableSeats}</p>
+                            <button onclick="viewBus('${bus._id}','${selectedJourneyDate || ''}')">View Details & Book</button>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('busResults').innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // View bus details and seats
+        async function viewBus(busId, journeyDate) {
+            try {
+            // If the user selected a date, pass it to the server so departureDateISO matches selection
+            const url = journeyDate ? `${API_BASE}/bus/${busId}?date=${journeyDate}` : `${API_BASE}/bus/${busId}`;
+            const response = await fetch(url);
+                const bus = await response.json();
+            // remember current bus and selected journey date
+            selectedJourneyDate = journeyDate || selectedJourneyDate;
+                currentBus = bus;
+                selectedSeats = [];
+                
+                // Create 2x2 bus layout (2 seats - aisle - 2 seats)
+                let seatsHtml = '<div class="bus-layout">';
+                seatsHtml += '<div class="bus-front">🚐 Driver</div>';
+                
+                // Create rows of 4 seats (2-2 layout)
+                for (let i = 0; i < bus.seats.length; i += 4) {
+                    seatsHtml += '<div class="seat-row">';
+                    
+                    // Left side - 2 seats
+                    seatsHtml += '<div class="seat-pair">';
+                    for (let j = 0; j < 2 && (i + j) < bus.seats.length; j++) {
+                        const seat = bus.seats[i + j];
+                        const seatClass = seat.isBooked ? 'booked' : 'available';
+                        seatsHtml += `
+                            <div class="seat ${seatClass}" 
+                                 onclick="${!seat.isBooked ? `selectSeat('${seat.seatNumber}')` : ''}"
+                                 id="seat-${seat.seatNumber}">
+                                ${seat.seatNumber}
+                            </div>
+                        `;
+                    }
+                    seatsHtml += '</div>';
+                    
+                    // Aisle
+                    seatsHtml += '<div class="aisle">║</div>';
+                    
+                    // Right side - 2 seats
+                    seatsHtml += '<div class="seat-pair">';
+                    for (let j = 2; j < 4 && (i + j) < bus.seats.length; j++) {
+                        const seat = bus.seats[i + j];
+                        const seatClass = seat.isBooked ? 'booked' : 'available';
+                        seatsHtml += `
+                            <div class="seat ${seatClass}" 
+                                 onclick="${!seat.isBooked ? `selectSeat('${seat.seatNumber}')` : ''}"
+                                 id="seat-${seat.seatNumber}">
+                                ${seat.seatNumber}
+                            </div>
+                        `;
+                    }
+                    seatsHtml += '</div>';
+                    
+                    seatsHtml += '</div>';
+                }
+                
+                seatsHtml += '</div>';
+
+                // Determine display date for bus details (prefer server-provided ISO, then selected date, then bus.departureDate)
+                const busDateIso = bus.departureDateISO || selectedJourneyDate || (bus.departureDate ? new Date(bus.departureDate).toISOString().split('T')[0] : null);
+                const busDisplayDate = busDateIso ? new Date(busDateIso).toLocaleDateString() : '';
+
+                document.getElementById('content').innerHTML = `
+                    <button onclick="showSearch()" class="back-btn">← Back to Search</button>
+                    <div class="bus-card">
+                        <h3>${bus.busName} (${bus.busNumber})</h3>
+                        <div class="bus-image-container">
+                            <img src="${bus.image}" alt="${bus.busName}" class="bus-image">
+                        </div>
+                        <p><strong>Route:</strong> ${bus.from} to ${bus.to}</p>
+                        <p><strong>Departure:</strong> ${bus.departureTime}${busDisplayDate ? ' on ' + busDisplayDate : ''}</p>
+                        <p><strong>Arrival:</strong> ${bus.arrivalTime}</p>
+                        <p><strong>Price per seat:</strong> ₹${bus.price}</p>
+                    </div>
+                    
+                    <div class="bus-card">
+                        <h4>Select Your Seats</h4>
+                        
+                        <div class="seat-legend">
+                            <div class="seat-legend-item">
+                                <div class="seat-legend-box" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);"></div>
+                                Available
+                            </div>
+                            <div class="seat-legend-item">
+                                <div class="seat-legend-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                                Selected
+                            </div>
+                            <div class="seat-legend-item">
+                                <div class="seat-legend-box" style="background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); opacity: 0.6;"></div>
+                                Booked
+                            </div>
+                        </div>
+                        
+                        ${seatsHtml}
+                        
+                        <div id="selectedSeatsInfo" class="hidden" style="margin-top: 20px;">
+                            <h4>Selected Seats: <span id="selectedCount">0</span></h4>
+                            <p style="font-size: 18px; color: #667eea; font-weight: bold;">Total Amount: ₹<span id="totalAmount">0</span></p>
+                            <button onclick="showPassengerForm()">Proceed to Passenger Details</button>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Select seat
+        function selectSeat(seatNumber) {
+            const seatElement = document.getElementById(`seat-${seatNumber}`);
+            const index = selectedSeats.indexOf(seatNumber);
+            
+            if (index === -1) {
+                selectedSeats.push(seatNumber);
+                seatElement.classList.add('selected');
+            } else {
+                selectedSeats.splice(index, 1);
+                seatElement.classList.remove('selected');
+            }
+            
+            const selectedCount = selectedSeats.length;
+            document.getElementById('selectedSeatsInfo').classList.toggle('hidden', selectedCount === 0);
+            document.getElementById('selectedCount').textContent = selectedCount;
+            document.getElementById('totalAmount').textContent = selectedCount * currentBus.price;
+        }
+
+        // Show passenger form
+        function showPassengerForm() {
+            let passengerForm = '';
+            selectedSeats.forEach((seat, index) => {
+                passengerForm += `
+                    <div class="bus-card">
+                        <h4>Passenger for Seat ${seat}</h4>
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" id="passengerName${index}" placeholder="Passenger name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Age:</label>
+                            <input type="number" id="passengerAge${index}" min="1" max="120" placeholder="Age" required>
+                            <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Must be between 1 and 120</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender:</label>
+                            <select id="passengerGender${index}" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('content').innerHTML = `
+                <button onclick="viewBus('${currentBus._id}')" class="back-btn">← Back to Seat Selection</button>
+                <h3>Passenger Details</h3>
+                ${passengerForm}
+                <div class="bus-card">
+                    <div class="form-group">
+                        <label>Contact Mobile:</label>
+                        <input type="tel" id="contactMobile" value="${currentUser.mobile}" placeholder="10-digit mobile number" maxlength="10" pattern="[6-9][0-9]{9}">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">10 digits starting with 6-9</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Email:</label>
+                        <input type="email" id="contactEmail" value="${currentUser.email}" placeholder="Email" required>
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Ticket details will be sent to this email after booking</small>
+                    </div>
+                    <button onclick="showPayment()">Proceed to Payment</button>
+                </div>
+            `;
+        }
+
+        // Show payment page
+        function showPayment() {
+            // Collect passenger details
+            const passengers = selectedSeats.map((seat, index) => ({
+                seatNumber: seat,
+                passengerName: document.getElementById(`passengerName${index}`).value.trim(),
+                passengerAge: document.getElementById(`passengerAge${index}`).value,
+                passengerGender: document.getElementById(`passengerGender${index}`).value
+            }));
+
+            // Validate passenger details
+            for (let i = 0; i < passengers.length; i++) {
+                const passenger = passengers[i];
+                if (!passenger.passengerName) {
+                    alert(`Please enter name for passenger ${i + 1}`);
+                    return;
+                }
+                if (!passenger.passengerAge || !validateAge(passenger.passengerAge)) {
+                    alert(`Please enter a valid age (1-120) for passenger ${i + 1}`);
+                    return;
+                }
+                if (!passenger.passengerGender) {
+                    alert(`Please select gender for passenger ${i + 1}`);
+                    return;
+                }
+            }
+
+            // Validate contact mobile
+            const contactMobile = document.getElementById('contactMobile').value.trim();
+            if (!contactMobile || !validateMobile(contactMobile)) {
+                alert('Please enter a valid 10-digit mobile number starting with 6-9');
+                return;
+            }
+
+            // Validate contact email
+            const contactEmail = document.getElementById('contactEmail').value.trim();
+            if (!contactEmail || !validateEmail(contactEmail)) {
+                alert('Please enter a valid email address (e.g., name@example.com)');
+                return;
+            }
+
+            // Store passenger details temporarily
+            window.tempPassengers = passengers;
+            window.tempContactMobile = document.getElementById('contactMobile').value;
+            window.tempContactEmail = document.getElementById('contactEmail').value;
+
+            document.getElementById('content').innerHTML = `
+                <button onclick="showPassengerForm()" class="back-btn">← Back to Passenger Details</button>
+                <div class="bus-card">
+                    <h3>Payment</h3>
+                    <p>Total Amount: ₹${selectedSeats.length * currentBus.price}</p>
+                    
+                    <div class="form-group">
+                        <label>Payment Method:</label>
+                        <select id="paymentMethod">
+                            <option value="upi">UPI</option>
+                            <option value="qr">QR Code</option>
+                        </select>
+                    </div>
+                    
+                    <div id="paymentDetails">
+                        <!-- Payment details will be shown here based on selection -->
+                    </div>
+                    
+                    <button id="completeBookingBtn" onclick="processPayment()">Complete Booking</button>
+                </div>
+            `;
+
+            // Show payment method details
+            showPaymentMethodDetails();
+        }
+
+        // Show payment method details
+        function showPaymentMethodDetails() {
+            const method = document.getElementById('paymentMethod').value;
+            let detailsHtml = '';
+            
+            if (method === 'upi') {
+                detailsHtml = `
+                    <div class="form-group">
+                        <label>UPI ID:</label>
+                        <input type="text" id="upiId" placeholder="yourname@paytm or yourname@phonepe" oninput="toggleCompleteBtn()" onblur="validateUPIInput()">
+                        <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Format: name@provider (e.g., name@paytm, name@phonepe, name@ybl)</small>
+                        <div id="upiError" class="error" style="display: none; margin-top: 5px;"></div>
+                    </div>
+                `;
+            } else if (method === 'qr') {
+                detailsHtml = `
+                    <p>Scan the QR code below to pay:</p>
+                    <img src="${API_BASE}/payment-qr" alt="QR Code" class="payment-qr">
+                `;
+            }
+            
+            document.getElementById('paymentDetails').innerHTML = detailsHtml;
+            // toggle button state based on payment method
+            toggleCompleteBtn();
+        }
+
+        function validateUPIInput() {
+            const upiId = document.getElementById('upiId')?.value.trim() || '';
+            const errorDiv = document.getElementById('upiError');
+            if (!errorDiv) return;
+            
+            if (upiId && !validateUPI(upiId)) {
+                errorDiv.textContent = 'Invalid UPI ID format. Use: name@provider (e.g., name@paytm)';
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+            toggleCompleteBtn();
+        }
+
+        function toggleCompleteBtn() {
+            const btn = document.getElementById('completeBookingBtn');
+            if (!btn) return;
+            const method = document.getElementById('paymentMethod')?.value;
+            if (method === 'upi') {
+                const upiVal = document.getElementById('upiId')?.value.trim() || '';
+                const isValid = upiVal.length > 0 && validateUPI(upiVal);
+                btn.disabled = !isValid;
+                btn.style.opacity = isValid ? '1' : '0.6';
+                btn.style.cursor = isValid ? 'pointer' : 'not-allowed';
+            } else {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            }
+        }
+
+        // Process payment and book seats
+        async function processPayment() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            if (paymentMethod === 'upi') {
+                const upiVal = document.getElementById('upiId')?.value.trim() || '';
+                if (!upiVal) {
+                    alert('Please enter your UPI ID before completing payment.');
+                    return;
+                }
+                if (!validateUPI(upiVal)) {
+                    alert('Please enter a valid UPI ID format (e.g., name@paytm, name@phonepe)');
+                    return;
+                }
+            }
+            
+            const bookingData = {
+                busId: currentBus._id,
+                seats: window.tempPassengers,
+                passengerDetails: {
+                    mobile: window.tempContactMobile,
+                    email: window.tempContactEmail
+                },
+                paymentMethod: paymentMethod,
+                upiId: paymentMethod === 'upi' ? (document.getElementById('upiId')?.value || '') : undefined,
+                journeyDate: selectedJourneyDate
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/book-seats`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+
+                const result = await response.json();
+                
+                // Check for expired token
+                if (handleExpiredToken(result)) return;
+                
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    alert('Booking successful! Ticket ID: ' + result.ticketId);
+                    showDashboard();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Booking failed. Please try again.');
+            }
+        }
+
+        // Handle expired token
+        function handleExpiredToken(data) {
+            if (data.expired || data.error === 'Session expired. Please login again.') {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                alert('Your session has expired. Please login again.');
+                showLogin();
+                return true;
+            }
+            return false;
+        }
+
+        // Show my bookings
+        async function showMyBookings() {
+            try {
+                const response = await fetch(`${API_BASE}/my-bookings`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const bookings = await response.json();
+                
+                // Check for expired token
+                if (handleExpiredToken(bookings)) return;
+                
+                let html = '<h3>My Bookings</h3>';
+                
+                if (bookings.length === 0) {
+                    html += '<p>No bookings found.</p>';
+                } else {
+                    bookings.forEach(booking => {
+                        const bus = booking.bus;
+                        const bookingDate = new Date(booking.bookingDate).toLocaleDateString();
+                        const statusClass = booking.isCancelled ? 'cancelled' : 'confirmed';
+                        
+                        html += `
+                            <div class="bus-card">
+                                <h4>Ticket ID: ${booking.ticketId}</h4>
+                                <p><strong>Bus:</strong> ${bus.busName} (${bus.busNumber})</p>
+                                <p><strong>Route:</strong> ${bus.from} to ${bus.to}</p>
+                                    <p><strong>Booking Date:</strong> ${bookingDate}</p>
+                                    <p><strong>Journey Date:</strong> ${booking.journeyDateISO ? new Date(booking.journeyDateISO).toLocaleDateString() : (booking.bus && booking.bus.departureDate ? new Date(booking.bus.departureDate).toLocaleDateString() : '')}</p>
+                                <p><strong>Status:</strong> <span class="${statusClass}">${booking.status.toUpperCase()}</span></p>
+                                <p><strong>Total Amount:</strong> ₹${booking.totalAmount}</p>
+                                <p><strong>Seats:</strong> ${booking.seats.map(s => s.seatNumber).join(', ')}</p>
+                                
+                                <div style="margin-top: 15px;">
+                                    <button onclick="downloadTicket('${booking.ticketId}')">Download Ticket</button>
+                                    ${!booking.isCancelled ? 
+                                        `<button onclick="cancelTicket('${booking.ticketId}')" class="btn-secondary">Cancel Ticket</button>` : 
+                                        `<p>Refund Amount: ₹${booking.refundAmount}</p>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                document.getElementById('content').innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Download ticket
+        async function downloadTicket(ticketId) {
+            window.open(`${API_BASE}/download-ticket/${ticketId}?token=${localStorage.getItem('token')}`, '_blank');
+        }
+
+        // Cancel ticket
+        async function cancelTicket(ticketId) {
+            if (!confirm('Are you sure you want to cancel this ticket? You will get 80% refund.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/cancel-ticket`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ ticketId })
+                });
+
+                const result = await response.json();
+                
+                // Check for expired token
+                if (handleExpiredToken(result)) return;
+                
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    alert(`Ticket cancelled successfully. Refund amount: ₹${result.refundAmount}`);
+                    showMyBookings();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Cancellation failed. Please try again.');
+            }
+        }
+
+        // Login function
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            // Validate email format
+            if (!isValidEmail(email)) {
+                document.getElementById('loginError').textContent = 'Please enter a valid email address (e.g., user@example.com)';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('loginError').textContent = data.error;
+                } else {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    showDashboard();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Register function
+        async function register() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const mobile = document.getElementById('regMobile').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            // Validate email format
+            if (!isValidEmail(email)) {
+                document.getElementById('registerError').textContent = 'Please enter a valid email address (e.g., user@example.com)';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, mobile, password })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('registerError').textContent = data.error;
+                } else {
+                    alert('Registration successful! Please login.');
+                    showLogin();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            currentUser = null;
+            showLogin();
+        }
+
+        // Event listener for payment method change
+        document.addEventListener('change', (e) => {
+            if (e.target.id === 'paymentMethod') {
+                showPaymentMethodDetails();
+            }
+        });
+    </script>
+</body>
+</html>
