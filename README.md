@@ -53,7 +53,8 @@ A full-stack bus booking application built with Node.js, Express, MongoDB, and v
    MONGODB_URI=mongodb://localhost:27017/bus-booking
    JWT_SECRET=your-super-secret-jwt-key-change-this
    PORT=5000
-   ```
+   EMAIL: YOUR_EMAIL
+   EMAIL_PASS: YOR_EMAIL_PASS /// for real time email notification
 
 4. **Start MongoDB**:
    - Make sure MongoDB is running on your system
@@ -72,13 +73,6 @@ A full-stack bus booking application built with Node.js, Express, MongoDB, and v
 6. **Open your browser**:
    - Navigate to `http://localhost:5000`
 
-## 🚀 Deployment
-
-See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed instructions on:
-- Adding project to GitHub
-- Deploying to Vercel
-- Setting up MongoDB Atlas
-- Environment variables configuration
 
 ## 📁 Project Structure
 
@@ -93,8 +87,7 @@ bus-booking/
 │   ├── Bus.js
 │   └── Booking.js
 ├── server.js             # Express server
-├── package.json          # Dependencies
-├── vercel.json           # Vercel configuration
+├── package.json          # Dependencie
 └── .env                  # Environment variables (not in git)
 ```
 
@@ -124,30 +117,7 @@ bus-booking/
 - `GET /api/bookings/:id` - Get booking by ID (protected)
 - `GET /api/bookings/:id/ticket` - Download ticket PDF (protected)
 
-## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 👨‍💻 Author
-
-Your Name
-
-## 🙏 Acknowledgments
-
-- Express.js community
-- MongoDB team
-- All open-source contributors
 
 ---
 
-For deployment instructions, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
-
-# h
